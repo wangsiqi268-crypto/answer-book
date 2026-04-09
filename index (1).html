@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Charlotte 的宇宙答案之书</title>
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #fef6f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem 3rem;
+      font-family: 'Noto Serif SC', Georgia, serif;
+    }
+
+    .header { text-align: center; margin-bottom: 0.4rem; }
+    .header-name {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 13px;
+      color: #c48a8a;
+      letter-spacing: 0.25em;
+    }
+    .header-title {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 24px;
+      color: #8a4a4a;
+      letter-spacing: 0.12em;
+      margin-top: 2px;
+    }
+    .header-hint {
+      font-size: 12px;
+      color: #c4a0a0;
+      letter-spacing: 0.12em;
+      margin-top: 8px;
+      margin-bottom: 1.6rem;
+    }
+
+    .deco-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.8rem;
+    }
+    .dot { width: 5px; height: 5px; border-radius: 50%; background: #e8b4b4; }
+    .dot-lg { width: 7px; height: 7px; border-radius: 50%; background: #d49898; }
+
+    #scene {
+      width: 270px;
+      height: 350px;
+      position: relative;
+      perspective: 1400px;
+      margin-bottom: 1.6rem;
+      animation: float-in 0.9s ease-out;
+    }
+    @keyframes float-in {
+      0%   { opacity: 0; transform: translateY(22px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    #page {
+      position: absolute;
+      inset: 0;
+      background: #fffaf6;
+      border-radius: 4px 10px 10px 4px;
+      border: 1px solid #e8d4c8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.2rem 1.6rem;
+      overflow: hidden;
+      transition: opacity 0.4s ease;
+    }
+    #page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 27px,
+        #f0e8e0 28px
+      );
+      opacity: 0.35;
+    }
+
+    .page-washi {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 14px;
+      background: repeating-linear-gradient(
+        90deg,
+        #f5c8c8 0px, #f5c8c8 18px,
+        #fad8d8 18px, #fad8d8 36px,
+        #f0c0c8 36px, #f0c0c8 54px
+      );
+      opacity: 0.5;
+    }
+
+    .page-receipt {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: #c48a8a;
+      margin-bottom: 1.4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    #answer-text {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 18px;
+      line-height: 2;
+      color: #3d2020;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      min-height: 60px;
+    }
+
+    .stamp {
+      margin-top: 1.2rem;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      border: 2px solid #e8a0a0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      transform: scale(3) rotate(-30deg);
+    }
+    .stamp.show {
+      animation: stamp-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes stamp-in {
+      0%   { opacity: 0; transform: scale(3) rotate(-30deg); }
+      60%  { opacity: 1; transform: scale(0.95) rotate(4deg); }
+      100% { opacity: 1; transform: scale(1) rotate(-6deg); }
+    }
+    .stamp-text {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 10px;
+      color: #e8a0a0;
+      letter-spacing: 0.05em;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .page-footer {
+      position: absolute;
+      bottom: 1.2rem;
+      font-size: 10px;
+      color: #d4b0b0;
+      letter-spacing: 0.18em;
+      z-index: 1;
+    }
+    #page-num {
+      position: absolute;
+      bottom: 1.2rem;
+      right: 1.4rem;
+      font-size: 10px;
+      color: #d4b0b0;
+      z-index: 1;
+    }
+
+    .sparkle {
+      position: absolute;
+      pointer-events: none;
+      font-size: 15px;
+      z-index: 20;
+      animation: float-up 1.3s ease-out forwards;
+    }
+    @keyframes float-up {
+      0%   { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-85px) scale(0.3); }
+    }
+
+    #cover {
+      position: absolute;
+      inset: 0;
+      background: #ebbcbc;
+      border-radius: 4px 10px 10px 4px;
+      border: 2px solid #c48a8a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transform-origin: left center;
+      transform-style: preserve-3d;
+      transition: transform 0.85s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 10;
+      overflow: hidden;
+    }
+    #cover.open { transform: rotateY(-172deg); }
+
+    .cover-outer { position: absolute; inset: 10px; border: 1px solid #d49898; border-radius: 6px; pointer-events: none; }
+    .cover-inner { position: absolute; inset: 16px; border: 1px dashed #c88888; border-radius: 4px; pointer-events: none; opacity: 0.5; }
+
+    .cover-for {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 11px;
+      color: #a05858;
+      letter-spacing: 0.3em;
+      margin-bottom: 4px;
+      position: relative; z-index: 1;
+    }
+    .cover-name {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 32px;
+      color: #7a2a2a;
+      letter-spacing: 0.15em;
+      position: relative; z-index: 1;
+      margin-bottom: 2px;
+    }
+    .cover-title-sub {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 16px;
+      color: #a05858;
+      letter-spacing: 0.2em;
+      position: relative; z-index: 1;
+    }
+    .cover-ornament {
+      margin: 1.4rem 0 0.6rem;
+      position: relative; z-index: 1;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .cover-star { font-size: 18px; color: #c47878; }
+    .cover-moon { font-size: 24px; color: #9a4a4a; }
+    .cover-en {
+      font-size: 9px;
+      color: #a07070;
+      letter-spacing: 0.25em;
+      position: relative; z-index: 1;
+    }
+    .cover-hint {
+      position: absolute;
+      bottom: 1.6rem;
+      font-size: 10px;
+      color: #b07878;
+      letter-spacing: 0.2em;
+      z-index: 1;
+    }
+    .cover-spine {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 16px;
+      background: #c48080;
+      border-radius: 4px 0 0 4px;
+      border-right: 1px solid #b06060;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .spine-dots { display: flex; flex-direction: column; gap: 5px; }
+    .spine-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+
+    #btn-area {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-height: 44px;
+    }
+
+    button {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 15px;
+      padding: 9px 24px;
+      background: transparent;
+      border: 1px solid #d4a0a0;
+      border-radius: 20px;
+      color: #8a4a4a;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: all 0.2s;
+    }
+    button:hover { background: #fce8e8; border-color: #c48a8a; }
+    button:active { transform: scale(0.96); }
+
+    .music-btn {
+      width: 38px !important;
+      height: 38px;
+      padding: 0 !important;
+      border-radius: 50% !important;
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e0b8b8 !important;
+      color: #b07878;
+    }
+    .music-btn.playing { background: #fce8e8 !important; }
+
+    .footer {
+      margin-top: 2rem;
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 13px;
+      color: #d4a8a8;
+      letter-spacing: 0.15em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-name">✦ For Charlotte ✦</div>
+    <div class="header-title">宇宙答案之书</div>
+  </div>
+  <div class="header-hint">心中默念你的问题，然后翻开此书</div>
+
+  <div class="deco-row">
+    <div class="dot"></div><div class="dot"></div>
+    <div class="dot-lg"></div>
+    <div class="dot"></div><div class="dot"></div>
+  </div>
+
+  <div id="scene">
+
+    <div id="page">
+      <div class="page-washi"></div>
+      <div class="page-receipt">✦ 宇宙 回 执 ✦</div>
+      <div id="answer-text"></div>
+      <div class="stamp" id="stamp">
+        <div class="stamp-text">宇宙<br>确认 ✓</div>
+      </div>
+      <div class="page-footer">— Charlotte 的专属答案 —</div>
+      <div id="page-num">p.<span id="pnum">1</span></div>
+    </div>
+
+    <div id="cover" onclick="openBook()">
+      <div class="cover-outer"></div>
+      <div class="cover-inner"></div>
+      <div class="cover-for">致</div>
+      <div class="cover-name">Charlotte</div>
+      <div class="cover-title-sub">的宇宙答案之书</div>
+      <div class="cover-ornament">
+        <span class="cover-star">✦</span>
+        <span class="cover-moon">☽</span>
+        <span class="cover-star">✦</span>
+      </div>
+      <div class="cover-en">THE UNIVERSE ALWAYS SAYS YES</div>
+      <div class="cover-hint">轻触 · 翻开</div>
+      <div class="cover-spine">
+        <div class="spine-dots">
+          <div class="spine-dot"></div><div class="spine-dot"></div>
+          <div class="spine-dot"></div><div class="spine-dot"></div>
+          <div class="spine-dot"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="btn-area">
+    <button onclick="openBook()">翻开此书</button>
+    <button class="music-btn" id="music-btn" onclick="toggleMusic()">♪</button>
+  </div>
+
+  <div class="footer">宇宙永远爱你 ♡</div>
+
+<script>
+const answers = [
+  "Charlotte，宇宙已收到你的订单，正在配送中。✨",
+  "你振动的频率，正在把所有美好事物拉向你。",
+  "亲爱的Charlotte，这个心愿已被宇宙标注为「优先处理」。",
+  "你只需要相信，剩下的交给宇宙来安排。",
+  "宇宙菜单上，这道你最想要的，已经为你保留好了。",
+  "Charlotte，你的心愿清单这一条——已在路上。",
+  "放下等待的焦虑，宇宙正用最好的时机送达。",
+  "你值得拥有你渴望的一切，宇宙从不忘记。",
+  "这个愿望比你想象中更近，再耐心一点点。",
+  "相信的力量，正在帮你打开那扇门。",
+  "Charlotte，今天的你，是明天那个愿望成真的起点。",
+  "宇宙说：Charlotte已经准备好了，给她吧。",
+  "你发出的每一个美好念头，都是正在发芽的种子。",
+  "Charlotte，收到。宇宙回执：愿望确认 ✓",
+  "这不是运气，是你一直在创造它。",
+  "你的内在已经拥有了，外在的显化只是时间问题。",
+  "Charlotte，今天对宇宙说谢谢——就好像它已经发生了。",
+  "吸引力法则正在工作，即使你还看不见。",
+  "你所渴望的，也在渴望着你。",
+  "宇宙的时机永远比你的计划更完美。",
+  "Charlotte，松手吧——你抓得越紧，它来得越慢。",
+  "这个答案是肯定的，宇宙盖章确认。",
+  "你已经在成为「拥有它的那个人」的路上了。",
+  "美好总是在你不再焦虑之后悄然到来。",
+  "Charlotte，去感受拥有它的喜悦，引力自然发生。",
+  "宇宙听见了，而且记下来了。",
+  "你的振动频率已经对上了——信号很强。",
+  "Charlotte，这是宇宙给你的小提示：继续前进。",
+  "你正在经历的，是通往它的必经之路。",
+  "相信你值得，是吸引力法则的全部起点。",
+  "Charlotte，宇宙说：她要的那个，给她两份。",
+  "你的高频状态，正在磁吸一切同频的美好。",
+  "感恩打开接收的通道——谢谢宇宙，它听见了。",
+  "Charlotte，你不需要知道怎么实现，宇宙自有安排。",
+  "你想象中那个美好的画面，正在变成现实的底稿。",
+  "宇宙最爱的事，就是给相信它的人惊喜。",
+  "Charlotte，今天的好心情，就是最好的引力场。",
+  "你越是活在喜悦里，它就来得越快。",
+  "这件事已经写在你的宇宙清单上了，✓ 已确认。",
+  "Charlotte，不是「如果发生」，是「当它发生的时候」。",
+  "你是自己现实的创造者，今天想创造什么？",
+  "宇宙的快递从不延误，只是走最好的那条路。",
+  "Charlotte，放下「怎么办」，拥抱「会很好」。",
+  "你发出的能量，决定你收到的礼物。",
+  "这一页翻过去，显化已经向你启动了。",
+  "Charlotte，你是磁铁，美好是铁屑——靠近是必然。",
+  "你的愿望不需要你的焦虑，只需要你的信任。",
+  "Charlotte，深呼吸——你正处在显化的前一刻。",
+  "是的，就是这个。宇宙帮你确认了。✨",
+  "Charlotte，今天，允许自己接收一切美好。",
+];
+
+let currentIdx = -1;
+let pageCount = 0;
+let audioCtx = null;
+let musicPlaying = false;
+let musicTimer = null;
+
+const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playNote(freq, when, dur, vol) {
+  const ctx = getAudio();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0, when);
+  gain.gain.linearRampToValueAtTime(vol, when + 0.04);
+  gain.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(when); osc.stop(when + dur);
+
+  const osc2 = ctx.createOscillator();
+  const g2 = ctx.createGain();
+  osc2.type = 'triangle';
+  osc2.frequency.value = freq * 2;
+  g2.gain.setValueAtTime(0, when);
+  g2.gain.linearRampToValueAtTime(vol * 0.18, when + 0.03);
+  g2.gain.exponentialRampToValueAtTime(0.0001, when + dur * 0.5);
+  osc2.connect(g2); g2.connect(ctx.destination);
+  osc2.start(when); osc2.stop(when + dur * 0.5);
+}
+
+function scheduleMusic() {
+  if (!musicPlaying) return;
+  const ctx = getAudio();
+  const now = ctx.currentTime;
+  const count = Math.random() < 0.35 ? 3 : 2;
+  for (let i = 0; i < count; i++) {
+    const f = notes[Math.floor(Math.random() * notes.length)];
+    playNote(f, now + i * (0.28 + Math.random() * 0.25), 1.8 + Math.random() * 1.2, 0.05);
+  }
+  musicTimer = setTimeout(scheduleMusic, 2400 + Math.random() * 1800);
+}
+
+function toggleMusic() {
+  const btn = document.getElementById('music-btn');
+  if (musicPlaying) {
+    musicPlaying = false;
+    clearTimeout(musicTimer);
+    btn.textContent = '♪';
+    btn.classList.remove('playing');
+  } else {
+    musicPlaying = true;
+    if (getAudio().state === 'suspended') getAudio().resume();
+    btn.textContent = '♫';
+    btn.classList.add('playing');
+    scheduleMusic();
+  }
+}
+
+function launchSparkles() {
+  const scene = document.getElementById('scene');
+  const symbols = ['✦', '☽', '✿', '♡', '*'];
+  for (let i = 0; i < 7; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'sparkle';
+      el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      el.style.left = (25 + Math.random() * 210) + 'px';
+      el.style.top = (180 + Math.random() * 100) + 'px';
+      el.style.color = ['#e8a0a0','#c48a8a','#d4b4b4','#e8c0c0'][Math.floor(Math.random() * 4)];
+      el.style.animationDelay = (Math.random() * 0.5) + 's';
+      scene.appendChild(el);
+      setTimeout(() => el.remove(), 1500);
+    }, i * 70);
+  }
+}
+
+function openBook() {
+  const cover = document.getElementById('cover');
+  const answerText = document.getElementById('answer-text');
+  const stamp = document.getElementById('stamp');
+  const btnArea = document.getElementById('btn-area');
+  const pnum = document.getElementById('pnum');
+
+  let idx;
+  do { idx = Math.floor(Math.random() * answers.length); } while (idx === currentIdx && answers.length > 1);
+  currentIdx = idx;
+  pageCount = 1;
+  answerText.textContent = answers[idx];
+  pnum.textContent = pageCount;
+  cover.classList.add('open');
+
+  setTimeout(() => {
+    cover.style.display = 'none';
+    stamp.classList.add('show');
+    launchSparkles();
+    btnArea.innerHTML = `
+      <button onclick="nextAnswer()">再翻一页</button>
+      <button class="music-btn" id="music-btn" onclick="toggleMusic()">♪</button>
+    `;
+  }, 870);
+}
+
+function nextAnswer() {
+  const page = document.getElementById('page');
+  const answerText = document.getElementById('answer-text');
+  const stamp = document.getElementById('stamp');
+  const pnum = document.getElementById('pnum');
+
+  page.style.opacity = '0';
+  stamp.classList.remove('show');
+
+  setTimeout(() => {
+    let idx;
+    do { idx = Math.floor(Math.random() * answers.length); } while (idx === currentIdx && answers.length > 1);
+    currentIdx = idx;
+    pageCount++;
+    answerText.textContent = answers[idx];
+    pnum.textContent = pageCount;
+    page.style.opacity = '1';
+    setTimeout(() => {
+      stamp.classList.add('show');
+      launchSparkles();
+    }, 260);
+  }, 400);
+}
+</script>
+</body>
+</html>
